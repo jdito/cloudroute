@@ -2,4 +2,8 @@
 
 - import_tasks: install.yml
 
+- import_tasks: server_certs.yml
+
+- import_tasks: client_certs.yml
+
 ...

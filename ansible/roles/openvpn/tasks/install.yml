@@ -12,79 +12,23 @@
 
 - name: Download EasyRSA
   get_url: 
-    url: https://github.com/OpenVPN/easy-rsa/releases/download/v3.0.7/EasyRSA-3.0.7.tgz
-    dest: /root/EasyRSA-3.0.7.tgz
+    url: "https://github.com/OpenVPN/easy-rsa/releases/download/v3.0.7/{{ easyrsa.version }}.tgz"
+    dest: "/root/{{ easyrsa.version }}.tgz"
 
 - name: Create EasyRSA directory
   file:
-    path: /root/EasyRSA-3.0.7
+    path: "/root/{{ easyrsa.version }}"
     state: directory
 
 - name: Extract EasyRSA
   unarchive: 
-    src: /root/EasyRSA-3.0.7.tgz
+    src: "/root/{{ easyrsa.version }}.tgz"
     dest: /root
     remote_src: yes
 
 - name: Copy EasyRSA required variables
   template:
     src: easyrsa.j2
-    dest: /root/EasyRSA-3.0.7/vars
+    dest: "/root/{{ easyrsa.version }}/vars"
 
-- name: EasyRSA init-pki
-  command: ./easyrsa init-pki
-  args:
-    chdir: /root/EasyRSA-3.0.7
-    creates: /root/EasyRSA-3.0.7/pki
-
-- name: EasyRSA build-ca
-  command: ./easyrsa build-ca nopass
-  args:
-    chdir: /root/EasyRSA-3.0.7
-    creates: /root/EasyRSA-3.0.7/pki/ca.crt
-  environment:
-    EASYRSA_BATCH: 1
-
-- name: Generate server signing request
-  command: ./easyrsa gen-req server nopass
-  args:
-    chdir: /root/EasyRSA-3.0.7
-    creates: "/root/EasyRSA-3.0.7/pki/private/server.key"
-  environment:
-    EASYRSA_BATCH: 1
-
-- name: Sign server certificate
-  command: ./easyrsa sign-req server server
-  args:
-    chdir: /root/EasyRSA-3.0.7
-    creates: "/root/EasyRSA-3.0.7/pki/issued/server.crt"
-  environment:
-    EASYRSA_BATCH: 1
-
-- name: Generate dh key
-  command: ./easyrsa gen-dh
-  args:
-    chdir: /root/EasyRSA-3.0.7
-    creates: "/root/EasyRSA-3.0.7/pki/dh.pem"
-  environment:
-    EASYRSA_BATCH: 1
-
-- name: Generate HMAC sig
-  command: openvpn --genkey --secret ta.key
-  args:
-    chdir: /root/EasyRSA-3.0.7
-    creates: "/root/EasyRSA-3.0.7/ta.key"
-
-- name: Copy files to /etc/openvpn
-  copy:
-    src: "{{ item }}"
-    dest: /etc/openvpn
-    remote_src: true
-  with_items:
-    - "/root/EasyRSA-3.0.7/pki/private/server.key"
-    - "/root/EasyRSA-3.0.7/pki/issued/server.crt"
-    - "/root/EasyRSA-3.0.7/pki/dh.pem"
-    - "/root/EasyRSA-3.0.7/ta.key"
-
-    #with_items: "{{ openvpn[connection] }}"
 ...

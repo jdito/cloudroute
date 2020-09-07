@@ -1,0 +1,58 @@
+---
+
+- name: EasyRSA init-pki
+  command: ./easyrsa init-pki
+  args:
+    chdir: "/root/{{ easyrsa.version }}"
+    creates: "/root/{{ easyrsa.version }}/pki"
+
+- name: EasyRSA build-ca
+  command: ./easyrsa build-ca nopass
+  args:
+    chdir: "/root/{{ easyrsa.version }}"
+    creates: "/root/{{ easyrsa.version }}/pki/ca.crt"
+  environment:
+    EASYRSA_BATCH: 1
+
+- name: Generate server signing request
+  command: ./easyrsa gen-req server nopass
+  args:
+    chdir: "/root/{{ easyrsa.version }}"
+    creates: "/root/{{ easyrsa.version }}/pki/private/server.key"
+  environment:
+    EASYRSA_BATCH: 1
+
+- name: Sign server certificate
+  command: ./easyrsa sign-req server server
+  args:
+    chdir: "/root/{{ easyrsa.version }}"
+    creates: "/root/{{ easyrsa.version }}/pki/issued/server.crt"
+  environment:
+    EASYRSA_BATCH: 1
+
+- name: Generate dh key
+  command: ./easyrsa gen-dh
+  args:
+    chdir: "/root/{{ easyrsa.version }}"
+    creates: "/root/{{ easyrsa.version }}/pki/dh.pem"
+  environment:
+    EASYRSA_BATCH: 1
+
+- name: Generate HMAC sig
+  command: openvpn --genkey --secret ta.key
+  args:
+    chdir: "/root/{{ easyrsa.version }}"
+    creates: "/root/{{ easyrsa.version }}/ta.key"
+
+- name: Copy files to /etc/openvpn
+  copy:
+    src: "{{ item }}"
+    dest: /etc/openvpn
+    remote_src: true
+  with_items:
+    - "/root/{{ easyrsa.version }}/pki/private/server.key"
+    - "/root/{{ easyrsa.version }}/pki/issued/server.crt"
+    - "/root/{{ easyrsa.version }}/pki/dh.pem"
+    - "/root/{{ easyrsa.version }}/ta.key"
+
+...

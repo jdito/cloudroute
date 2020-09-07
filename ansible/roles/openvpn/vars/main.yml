@@ -6,6 +6,7 @@ easyrsa:
   email: "joe@ditommasso.com"
   ou: "ditommasso.com"
   cn: "OpenVPN"
+  version: "EasyRSA-3.0.7"
 
 openvpn:
   connection:
