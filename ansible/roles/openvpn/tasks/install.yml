@@ -1,0 +1,29 @@
+---
+
+- name: Install EPEL
+  yum:
+    name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+    state: installed
+
+- name: Install OpenVPN
+  yum:
+    name: openvpn
+    state: present
+
+- name: Download EasyRSA
+  get_url: 
+    url: https://github.com/OpenVPN/easy-rsa/releases/download/v3.0.7/EasyRSA-3.0.7.tgz
+    dest: /root/EasyRSA-3.0.7.tgz
+
+- name: Create EasyRSA directory
+  file:
+    path: /root/EasyRSA-3.0.7
+    state: directory
+
+- name: Extract EasyRSA
+  unarchive: 
+    src: /root/EasyRSA-3.0.7.tgz
+    dest: /root
+    remote_src: yes
+
+...
