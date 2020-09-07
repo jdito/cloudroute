@@ -1,0 +1,14 @@
+Prereqs:
+- AWS account
+- Domain in route53
+- SSH key
+
+Add Route53 domain ID to zone_id in terraform/variables.tf, SSH public key in terraform/variables.tf. Add your AWS access key ID and secret key to ~/.aws/credentials.
+
+Setup:
+- Download terraform
+- cd into terraform directory 
+-- run `terraform apply` 
+- cd into ansible directory
+-- update roles/openvpn/vars/main.yml with relevant info
+-- run `ansible-playbook playbooks/router.yml`

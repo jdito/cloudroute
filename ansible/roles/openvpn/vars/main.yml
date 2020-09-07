@@ -1,0 +1,13 @@
+easyrsa:
+  country: "US"
+  province: "IL"
+  city: "Chicago"
+  org: "ditommasso.com"
+  email: "joe@ditommasso.com"
+  ou: "ditommasso.com"
+  cn: "OpenVPN"
+
+openvpn:
+  connection:
+    - eth0
+    - eth1
