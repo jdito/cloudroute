@@ -23,3 +23,29 @@
   environment:
     EASYRSA_BATCH: 1
   with_items: "{{ openvpn.connection }}"
+
+- name: Copy ta.key and ca.crt files to /etc/openvpn/client-configs/keys
+  copy:
+    src: "{{ item }}"
+    dest: /etc/openvpn/client-configs/keys
+    remote_src: yes
+  with_items:
+    - "/root/{{ easyrsa.version }}/ta.key"
+    - "/etc/openvpn/ca.crt"
+
+- name: Copy .crt files to /etc/openvpn/client-configs/keys
+  copy:
+    src: "/root/{{ easyrsa.version }}/pki/issued/{{ item }}.crt"
+    dest: /etc/openvpn/client-configs/keys
+    remote_src: yes
+  with_items: "{{ openvpn.connection }}"
+
+
+- name: Copy .key files to /etc/openvpn/client-configs/keys
+  copy:
+    src: "/root/{{ easyrsa.version }}/pki/private/{{ item }}.key"
+    dest: /etc/openvpn/client-configs/keys
+    remote_src: yes
+  with_items: "{{ openvpn.connection }}"
+
+...

@@ -1,0 +1,13 @@
+---
+
+- import_tasks: install.yml
+  tags:
+    - install_bird
+    - bird
+
+- import_tasks: configure.yml
+  tags:
+    - configure_bird
+    - bird
+
+...

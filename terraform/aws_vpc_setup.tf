@@ -70,3 +70,17 @@ resource "aws_security_group" "allow_ssh" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
+resource "aws_security_group" "allow_openvpn" {
+  name        = "allow_openvpn"
+  description = "Allow OpenVPN inbound traffic"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    description = "OpenVPN from anywhere"
+    from_port   = 1194
+    to_port     = 1194
+    protocol    = "udp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}

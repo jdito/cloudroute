@@ -1,0 +1,101 @@
+---
+
+- name: Create config directory
+  file:
+    path: /etc/openvpn/client-configs/files
+    state: directory
+
+- name: Copy base template
+  template:
+    src: client.conf.j2
+    dest: "/etc/openvpn/client-configs/files/{{ item.key }}.conf"
+  vars:
+    server: "{{ item.key }}.{{ openvpn.hostname }}"
+  loop: "{{ lookup('dict', openvpn.connection) }}"
+
+- name: Register ca cert
+  shell: "cat /etc/openvpn/ca.crt"
+  register: cacert
+
+- name: Register client certs
+  shell: "cat /etc/openvpn/client-configs/keys/{{ item.key }}.crt"
+  loop: "{{ lookup('dict', openvpn.connection) }}"
+  register: clientcert
+
+- name: Register client keys
+  shell: "cat /etc/openvpn/client-configs/keys/{{ item.key }}.key"
+  loop: "{{ lookup('dict', openvpn.connection) }}"
+  register: clientkey
+
+- name: Register ta key
+  shell: "cat /etc/openvpn/client-configs/keys/ta.key"
+  register: takey
+
+- name: Print cacert
+  debug: 
+    msg: "{{ cacert }}"
+    verbosity: 1
+
+- name: Print clientcert
+  debug: 
+    msg: "{{ clientcert }}"
+    verbosity: 1
+
+- name: Print clientkey
+  debug: 
+    msg: "{{ clientkey }}"
+    verbosity: 1
+
+- name: Add ca cert to config file
+  blockinfile:
+    path: "/etc/openvpn/client-configs/files/{{ item.key }}.conf"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK cacert"
+    insertafter: EOF
+    block: |
+      <ca>
+      {{ cacert.stdout }}
+      </ca>
+  loop: "{{ lookup('dict', openvpn.connection) }}"
+
+- name: Add client cert to config file
+  blockinfile:
+    path: "/etc/openvpn/client-configs/files/{{ item.item.key }}.conf"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK clientcert"
+    insertafter: EOF
+    block: |
+      <cert>
+      {{ item.stdout }}
+      </cert>
+  loop: "{{ clientcert.results }}"
+
+- name: Add client key to config file
+  blockinfile:
+    path: "/etc/openvpn/client-configs/files/{{ item.item.key }}.conf"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK clientkey"
+    insertafter: EOF
+    block: |
+      <key>
+      {{ item.stdout }}
+      </key>
+  loop: "{{ clientkey.results }}"
+
+- name: Add ta key to config file
+  blockinfile:
+    path: "/etc/openvpn/client-configs/files/{{ item.key }}.conf"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK takey"
+    insertafter: EOF
+    block: |
+      <tls-auth>
+      {{ takey.stdout }}
+      </tls-auth>
+  loop: "{{ lookup('dict', openvpn.connection) }}"
+
+# Downloads client config files to
+# /tmp/router/etc/openvpn/client-configs/files
+- name: Download client configs 
+  fetch:
+    src: "/etc/openvpn/client-configs/files/{{ item.key }}.conf"
+    dest: /tmp
+  loop: "{{ lookup('dict', openvpn.connection) }}"
+
+...

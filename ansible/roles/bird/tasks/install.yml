@@ -1,0 +1,8 @@
+---
+
+- name: Install bird
+  yum:
+    name: bird2
+    state: installed
+
+...

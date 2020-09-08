@@ -53,6 +53,7 @@
     - "/root/{{ easyrsa.version }}/pki/private/server.key"
     - "/root/{{ easyrsa.version }}/pki/issued/server.crt"
     - "/root/{{ easyrsa.version }}/pki/dh.pem"
+    - "/root/{{ easyrsa.version }}/pki/ca.crt"
     - "/root/{{ easyrsa.version }}/ta.key"
 
 ...

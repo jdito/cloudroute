@@ -1,0 +1,8 @@
+---
+
+- name: restart bird
+  systemd:
+    name: bird
+    state: restarted
+
+...

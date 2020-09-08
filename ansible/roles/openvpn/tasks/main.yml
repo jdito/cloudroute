@@ -1,9 +1,28 @@
 ---
 
 - import_tasks: install.yml
+  tags: 
+    - openvpn_install
+    - openvpn
 
 - import_tasks: server_certs.yml
+  tags: 
+    - openvpn_server_certs
+    - openvpn
 
 - import_tasks: client_certs.yml
+  tags:
+    - openvpn_client_certs
+    - openvpn
+
+- import_tasks: server_setup.yml
+  tags:
+    - openvpn_server_setup
+    - openvpn
+
+- import_tasks: client_config.yml
+  tags:
+    - openvpn_client_config
+    - openvpn
 
 ...

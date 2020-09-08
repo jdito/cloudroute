@@ -19,6 +19,7 @@ resource "aws_instance" "router" {
   security_groups = [
     aws_security_group.allow_outbound.id,
     aws_security_group.allow_icmp.id,
+    aws_security_group.allow_openvpn.id,
     aws_security_group.allow_ssh.id
   ]
 
@@ -32,6 +33,7 @@ resource "aws_network_interface" "secondary" {
   security_groups = [
     aws_security_group.allow_outbound.id,
     aws_security_group.allow_icmp.id,
+    aws_security_group.allow_openvpn.id,
     aws_security_group.allow_ssh.id
   ]
 

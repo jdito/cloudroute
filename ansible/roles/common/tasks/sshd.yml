@@ -27,7 +27,7 @@
     validate: '/sbin/sshd -T -f %s'
   notify: restart sshd
 
-- name: Disable UseDNS for colo hosts
+- name: Disable UseDNS
   lineinfile:
     path: /etc/ssh/sshd_config
     regexp: '^UseDNS'

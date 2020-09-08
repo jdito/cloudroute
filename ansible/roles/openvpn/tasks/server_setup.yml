@@ -1,0 +1,25 @@
+---
+
+- name: Print openvpn.connection
+  debug: 
+    msg: "{{ item.key }}: {{ item.value }}"
+    verbosity: 1
+  loop: "{{ lookup('dict', openvpn.connection) }}"
+
+- name: Copy server config template
+  template:
+    src: "{{ openvpn.proto }}.server.conf.j2"
+    dest: "/etc/openvpn/{{ item.key }}.conf"
+  vars:
+    ipaddr: "{{ hostvars[inventory_hostname]['ansible_' + item.key]['ipv4']['address'] }}"
+    vpnnet: "{{ item.value }}"
+  loop: "{{ lookup('dict', openvpn.connection) }}"
+
+- name: Start/enable openvpn services
+  systemd:
+    name: "openvpn@{{ item.key }}.service"
+    state: started
+    enabled: yes
+  loop: "{{ lookup('dict', openvpn.connection) }}"
+
+...
